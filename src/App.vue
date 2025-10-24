@@ -105,7 +105,7 @@ function checkAnswer() {
 
 <template>
   <div class="w-full flex flex-col gap-y-10 items-center justify-center p-4">
-    <h1 class="text-4xl font-bold text-black dark:text-white">
+    <h1 class="text-2xl md:text-4xl font-bold text-black dark:text-white">
       Practicar los números en español
     </h1>
 
@@ -114,24 +114,25 @@ function checkAnswer() {
     >
       <p class="font-normal text-gray-700 dark:text-gray-400">Modo:</p>
       <!-- Toggle for Numbers -->
-      <ul class="flex items-center justify-center gap-4">
+      <ul class="flex flex-wrap items-center justify-center gap-4">
         <template v-for="(numSet, i) in numberSettings">
           <li class="flex flex-row items-center justify-center gap-x-2">
-            <input
-              type="radio"
-              :id="'numberSetting' + numSet.id"
-              name="numberSetting"
-              :value="numSet.name"
-              v-model="numberSetting"
-              v-on:change="onChangeNumberSetting"
-              :checked="numSet.name == numberSetting"
-            />
-
             <label
-              class="text-gray-900 dark:text-white"
+              class="p-2 rounded-lg text-gray-900 dark:text-white has-checked:bg-indigo-50 has-checked:text-indigo-900 has-checked:ring-indigo-200 dark:has-checked:bg-indigo-900 dark:has-checked:text-indigo-200 dark:has-checked:ring-indigo-900"
               :for="'numberSetting' + numSet.id"
-              >{{ numSet.label }}</label
             >
+              <input
+                type="radio"
+                :id="'numberSetting' + numSet.id"
+                name="numberSetting"
+                :value="numSet.name"
+                v-model="numberSetting"
+                v-on:change="onChangeNumberSetting"
+                :checked="numSet.name == numberSetting"
+                class="w-4 h-4 bg-gray-100 checked:bg-indigo-500 border-gray-300 focus:ring-indigo-500 dark:focus:ring-indigo-600 checked:ring-indigo-500 dark:checked:ring-indigo-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500 accent-indigo-600 dark:accent-indig-600"
+              />
+              {{ numSet.label }}
+            </label>
           </li>
         </template>
       </ul>
@@ -164,7 +165,7 @@ function checkAnswer() {
         }}
       </p>
       <h2
-        class="mb-2 text-4xl font-bold tracking-tight text-gray-900 dark:text-white"
+        class="mb-2 text-xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white"
       >
         {{ isReverseMode ? numberToSpanish(currentNumber) : currentNumber }}
       </h2>
