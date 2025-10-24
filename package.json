@@ -1,0 +1,23 @@
+{
+  "name": "spanish-numbers-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "A single-page app for practicing Spanish numbers.",
+  "author": "Daniel Dinter",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.16",
+    "vue": "^3.5.22"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "tailwindcss": "^4.1.16",
+    "vite": "^7.1.7"
+  }
+}
