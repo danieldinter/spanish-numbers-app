@@ -99,27 +99,29 @@ function checkAnswer() {
     </h1>
 
     <div
-      class="w-1/2 p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
+      class="w-full p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
-      <div class="flex flex-wrap items-center justify-center gap-4">
+      <ul class="flex flex-wrap items-center justify-center gap-4">
         <template v-for="(numSet, i) in numberSettings">
-          <input
-            type="radio"
-            :id="'numberSetting' + numSet.id"
-            name="numberSetting"
-            :value="numSet.name"
-            v-model="numberSetting"
-            v-on:change="onChangeNumberSetting"
-            :checked="numSet.name == numberSetting"
-          />
+          <li class="flex flex-row items-center justify-center gap-2">
+            <input
+              type="radio"
+              :id="'numberSetting' + numSet.id"
+              name="numberSetting"
+              :value="numSet.name"
+              v-model="numberSetting"
+              v-on:change="onChangeNumberSetting"
+              :checked="numSet.name == numberSetting"
+            />
 
-          <label :for="'numberSetting' + numSet.id">{{ numSet.label }}</label>
+            <label :for="'numberSetting' + numSet.id">{{ numSet.label }}</label>
+          </li>
         </template>
-      </div>
+      </ul>
     </div>
 
     <div
-      class="w-1/2 p-6 mt-10 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
+      class="w-full p-6 mt-10 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
       <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">
         Qué número es este?
@@ -132,27 +134,29 @@ function checkAnswer() {
     </div>
 
     <div
-      class="w-1/2 p-6 mt-10 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
+      class="w-full p-6 mt-10 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
       <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">
         Escribe el número con letras:
       </p>
 
-      <div class="flex">
+      <div class="flex flex-row w-full">
         <input
           v-model="userInput"
           type="text"
           placeholder="p. ej. treinta y cuatro"
-          class="text-4xl w-3/5 p-2 border border-r-0 border-indigo-600 rounded-l-lg bg-none text-gray-900 dark:text-white tracking-tight focus:outline-none"
+          class="text-sm md:text-4xl w-3/5 p-2 border border-r-0 border-indigo-600 rounded-l-lg bg-none text-gray-900 dark:text-white tracking-tight focus:outline-none"
           @keyup.enter="checkAnswer"
           autofocus
         />
         <button
           @click="checkAnswer"
-          class="w-2/5 p-2 border border-indigo-600 rounded-r-lg bg-indigo-800 text-white hover:bg-indigo-600"
+          class="text-sm md:text-xl w-2/5 p-2 border border-indigo-600 rounded-r-lg bg-indigo-800 text-white hover:bg-indigo-600"
         >
           <span class="font-bold">Verificar</span>
-          <span class="align-basline opacity-40 text-sm">(&#x23CE;)</span>
+          <span class="align-basline opacity-40 text-sm invisible md:visible"
+            >(&#x23CE;)</span
+          >
         </button>
       </div>
     </div>
