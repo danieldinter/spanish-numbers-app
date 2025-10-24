@@ -113,7 +113,11 @@ function checkAnswer() {
               :checked="numSet.name == numberSetting"
             />
 
-            <label :for="'numberSetting' + numSet.id">{{ numSet.label }}</label>
+            <label
+              class="text-gray-900 dark:text-white"
+              :for="'numberSetting' + numSet.id"
+              >{{ numSet.label }}</label
+            >
           </li>
         </template>
       </ul>
