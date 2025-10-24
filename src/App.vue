@@ -4,12 +4,14 @@ import { numberToSpanish } from "./numberToSpanish.js";
 import AlertError from "./components/AlertError.vue";
 import AlertSuccess from "./components/AlertSuccess.vue";
 
+var numberSetting = ref("upToThousand");
+const isReverseMode = ref(false);
+
 const currentNumber = ref(generateRandomNumber());
 const userInput = ref("");
 const feedback = ref("");
 const feedbackTitle = ref("");
 const feedbackMessage = ref("");
-var numberSetting = ref("upToThousand");
 
 const numberSettings = [
   {
@@ -39,6 +41,10 @@ const numberSettings = [
   },
 ];
 
+function getQuestionPlaceholder() {
+  return isReverseMode.value ? "p. ej. 34" : "p. ej. treinta y cuatro";
+}
+
 function generateRandomNumber(numberSetting = "upToThousand") {
   switch (numberSetting) {
     case "units":
@@ -66,17 +72,24 @@ function onChangeNumberSetting() {
 }
 
 function checkAnswer() {
-  const correct = numberToSpanish(currentNumber.value).toLowerCase().trim();
+  var correct = false;
+  if (isReverseMode.value) {
+    // isReverseMode = true means user sees the Spanish word and has to type the numeral
+    correct = currentNumber.value.toString();
+  } else {
+    // isReverseMode = false (default) means user sees the  numeral and has to type the Spanish word
+    correct = numberToSpanish(currentNumber.value).toLowerCase().trim();
+  }
   const input = userInput.value.toLowerCase().trim();
 
   if (input === correct) {
     feedback.value = true;
-    feedbackTitle.value = "¡Exacto!";
+    feedbackTitle.value = "¡Correcto!";
     feedbackMessage.value = "¡Buen trabajo! 👏";
   } else {
     feedback.value = false;
     feedbackTitle.value = "¡Incorrecto!";
-    feedbackMessage.value = `Correcta es: ${correct}`;
+    feedbackMessage.value = `Correcto es: ${correct}`;
   }
 
   // Reset feedback after 5 seconds
@@ -97,12 +110,13 @@ function checkAnswer() {
     </h1>
 
     <div
-      class="w-full p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
+      class="w-full flex flex-col gap-y-4 items-center justify-center p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
-      <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">Modo:</p>
-      <ul class="flex flex-wrap items-center justify-center gap-4">
+      <p class="font-normal text-gray-700 dark:text-gray-400">Modo:</p>
+      <!-- Toggle for Numbers -->
+      <ul class="flex items-center justify-center gap-4">
         <template v-for="(numSet, i) in numberSettings">
-          <li class="flex flex-row items-center justify-center gap-2">
+          <li class="flex flex-row items-center justify-center gap-x-2">
             <input
               type="radio"
               :id="'numberSetting' + numSet.id"
@@ -121,33 +135,58 @@ function checkAnswer() {
           </li>
         </template>
       </ul>
+      <!-- Toggle for Reverse Mode -->
+      <div class="flex items-center justify-center">
+        <label class="inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            value=""
+            class="sr-only peer"
+            v-model="isReverseMode"
+          />
+          <div
+            class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-indigo-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600 dark:peer-checked:bg-indigo-600"
+          ></div>
+          <span class="ms-3 text-gray-900 dark:text-white">inverso</span>
+        </label>
+      </div>
     </div>
 
+    <!-- Question -->
     <div
       class="w-full p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
       <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">
-        Qué número es este?
+        {{
+          isReverseMode
+            ? "¿Qué número es este en cifras?"
+            : "¿Qué número es este?"
+        }}
       </p>
       <h2
         class="mb-2 text-4xl font-bold tracking-tight text-gray-900 dark:text-white"
       >
-        {{ currentNumber }}
+        {{ isReverseMode ? numberToSpanish(currentNumber) : currentNumber }}
       </h2>
     </div>
 
+    <!-- Input Field -->
     <div
       class="w-full p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
       <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">
-        Escribe el número con letras:
+        {{
+          isReverseMode
+            ? "Escribe el número en cifras:"
+            : "Escribe el número con letras:"
+        }}
       </p>
 
       <div class="flex flex-row w-full">
         <input
           v-model="userInput"
           type="text"
-          placeholder="p. ej. treinta y cuatro"
+          :placeholder="getQuestionPlaceholder()"
           class="text-sm md:text-2xl w-3/5 p-2 border border-r-0 border-indigo-600 rounded-l-lg bg-none text-gray-900 dark:text-white tracking-tight focus:outline-none"
           @keyup.enter="checkAnswer"
           autofocus
