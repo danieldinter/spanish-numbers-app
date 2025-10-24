@@ -76,7 +76,7 @@ function checkAnswer() {
   } else {
     feedback.value = false;
     feedbackTitle.value = "¡Incorrecto!";
-    feedbackMessage.value = `Correcta es:: ${correct}`;
+    feedbackMessage.value = `Correcta es: ${correct}`;
   }
 
   // Reset feedback after 5 seconds
@@ -91,16 +91,15 @@ function checkAnswer() {
 </script>
 
 <template>
-  <div
-    class="min-h-screen w-full flex flex-col items-center justify-center p-4"
-  >
-    <h1 class="text-2xl font-bold mb-4 text-black dark:text-white">
+  <div class="w-full flex flex-col gap-y-10 items-center justify-center p-4">
+    <h1 class="text-4xl font-bold text-black dark:text-white">
       Practicar los números en español
     </h1>
 
     <div
       class="w-full p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
+      <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">Modo:</p>
       <ul class="flex flex-wrap items-center justify-center gap-4">
         <template v-for="(numSet, i) in numberSettings">
           <li class="flex flex-row items-center justify-center gap-2">
@@ -121,7 +120,7 @@ function checkAnswer() {
     </div>
 
     <div
-      class="w-full p-6 mt-10 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
+      class="w-full p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
       <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">
         Qué número es este?
@@ -134,7 +133,7 @@ function checkAnswer() {
     </div>
 
     <div
-      class="w-full p-6 mt-10 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
+      class="w-full p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
       <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">
         Escribe el número con letras:
@@ -145,7 +144,7 @@ function checkAnswer() {
           v-model="userInput"
           type="text"
           placeholder="p. ej. treinta y cuatro"
-          class="text-sm md:text-4xl w-3/5 p-2 border border-r-0 border-indigo-600 rounded-l-lg bg-none text-gray-900 dark:text-white tracking-tight focus:outline-none"
+          class="text-sm md:text-2xl w-3/5 p-2 border border-r-0 border-indigo-600 rounded-l-lg bg-none text-gray-900 dark:text-white tracking-tight focus:outline-none"
           @keyup.enter="checkAnswer"
           autofocus
         />

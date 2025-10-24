@@ -13,7 +13,7 @@ defineProps({
 
 <template>
   <div
-    class="animate-bounce p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-300 dark:bg-green-950 dark:text-green-400 z-10 fixed top-0 m-10"
+    class="animate-bounce p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-300 dark:bg-green-950 dark:text-green-400 z-10 fixed top-0 mx-auto mt-20"
     role="alert"
   >
     <span class="font-bold">{{ title }}</span> {{ message }}
