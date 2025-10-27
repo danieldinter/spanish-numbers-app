@@ -1,12 +1,14 @@
 # Spanish Numbers App
 
-This is a single-page application designed to help users practice writing numbers in words in Spanish. The app generates random numbers (0–1000) and asks the user to type the corresponding Spanish words. It provides instant feedback on correctness.
+This is a single-page application designed to help users practice Spanish numbers. The app generates random numbers (0–1000) and asks the user to type the corresponding Spanish words or vice versa. It provides instant feedback on correctness and includes additional features for enhanced learning.
 
 ## Features
 
-- **Random Number Generation**: Numbers are generated based on user-selected ranges (e.g., 0–10, 11–20, 0–1000).
+- **Random Number Generation**: Numbers are generated based on user-selected ranges (e.g., 0–9, 10–19, 20–29, 0–99, 0–999).
+- **Reverse Mode**: Allows users to switch between typing numbers in words or numerals.
 - **Spanish Number Conversion**: Converts numbers to their Spanish word equivalents.
 - **Feedback System**: Displays success or error messages based on user input.
+- **Number List Modal**: Displays a complete list of numbers (0–1000) with their Spanish word equivalents.
 - **Responsive Design**: Styled with Tailwind CSS for a clean and responsive UI.
 
 ## Getting Started
@@ -65,10 +67,11 @@ npm run preview
 
 ## Project Structure
 
-- `src/App.vue`: Main application logic and UI.
+- `src/App.vue`: Main application logic and UI, including reverse mode and modal functionality.
 - `src/numberToSpanish.js`: Core logic for converting numbers to Spanish words.
-- `src/components/`: Contains reusable components like `AlertError` and `AlertSuccess`.
-- `public/`: Static assets.
+- `src/components/`: Contains reusable components like `AlertError`, `AlertSuccess`, and `Modal`.
+- `public/`: Static assets, including the app logo.
+- `tests/`: Contains test cases for `numberToSpanish` and other functions.
 - `package.json`: Project scripts and dependencies.
 
 ## Contributing
@@ -98,3 +101,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - Built with [Vue 3](https://vuejs.org/) and [Vite](https://vitejs.dev/).
 - Styled with [Tailwind CSS](https://tailwindcss.com/).
+- Tested with [Vitest](https://vitest.dev/).
