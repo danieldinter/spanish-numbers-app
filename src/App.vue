@@ -4,10 +4,13 @@ import { numberToSpanish } from "./numberToSpanish.js";
 import { generateRandomNumber } from "./generateRandomNumber.js";
 import AlertError from "./components/AlertError.vue";
 import AlertSuccess from "./components/AlertSuccess.vue";
+import Modal from "./components/Modal.vue";
 
 var numberSetting = ref("upToThousand");
 const isReverseMode = ref(false);
+const showModal = ref(false);
 
+const numberList = ref(generateNumberList());
 const currentNumber = ref(generateRandomNumber());
 const userInput = ref("");
 const feedback = ref("");
@@ -44,6 +47,14 @@ const numberSettings = [
 
 function getQuestionPlaceholder() {
   return isReverseMode.value ? "p. ej. 34" : "p. ej. treinta y cuatro";
+}
+
+function generateNumberList() {
+  const numbers = [];
+  for (let i = 0; i <= 1000; i++) {
+    numbers.push({ value: i, name: numberToSpanish(i) });
+  }
+  return numbers;
 }
 
 function generateAndSetNewNumber() {
@@ -187,6 +198,32 @@ function checkAnswer() {
         </button>
       </div>
     </div>
+
+    <!-- Button to Open Modal -->
+    <button
+      @click="showModal = true"
+      class="p-2 border border-indigo-600 rounded-lg bg-indigo-800 text-white hover:bg-indigo-600"
+    >
+      Ver lista de números
+    </button>
+
+    <!-- Modal -->
+    <Modal
+      :show="showModal"
+      title="Lista de números"
+      @close="showModal = false"
+    >
+      <table class="w-full text-left text-gray-700 dark:text-gray-400">
+        <tr
+          v-for="(item, index) in numberList"
+          :key="index"
+          class="border-b dark:border-gray-700 border-gray-200 w-full"
+        >
+          <td class="p-4 w-1/2">{{ item.value }}</td>
+          <td class="p-4 w-1/2">{{ item.name }}</td>
+        </tr>
+      </table>
+    </Modal>
 
     <AlertSuccess
       v-if="feedback === true"
