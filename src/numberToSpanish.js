@@ -48,7 +48,7 @@ export function numberToSpanish(n) {
     "veintinueve",
   ];
   const hundreds = [
-    "cien",
+    "ciento",
     "doscientos",
     "trescientos",
     "cuatrocientos",
