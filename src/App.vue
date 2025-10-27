@@ -51,7 +51,7 @@ function getQuestionPlaceholder() {
 
 function generateNumberList() {
   const numbers = [];
-  for (let i = 0; i <= 1000; i++) {
+  for (let i = 0; i <= 999; i++) {
     numbers.push({ value: i, name: numberToSpanish(i) });
   }
   return numbers;
