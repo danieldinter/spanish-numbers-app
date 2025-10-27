@@ -1,12 +1,10 @@
 <script setup>
-import { defineProps, defineEmits } from "vue";
-
 defineProps({
   show: Boolean,
   title: String,
 });
 
-const emit = defineEmits(["close"]);
+defineEmits(["close"]);
 </script>
 
 <template>
