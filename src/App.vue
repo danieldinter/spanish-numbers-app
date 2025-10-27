@@ -2,10 +2,11 @@
 import { ref, computed } from "vue";
 import { numberToSpanish } from "./numberToSpanish.js";
 import { generateRandomNumber } from "./generateRandomNumber.js";
-import AlertError from "./components/AlertError.vue";
-import AlertSuccess from "./components/AlertSuccess.vue";
+import { useToast } from "./composables/useToast";
+import { useI18n } from "vue-i18n";
 import Modal from "./components/Modal.vue";
 import FireIcon from "./components/FireIcon.vue";
+import Toast from "./components/Toast.vue";
 import buildInfo from "../build-info.json";
 
 var numberSetting = ref("upToThousand");
@@ -16,12 +17,18 @@ const showHint = ref(false);
 const numberList = ref(generateNumberList());
 const currentNumber = ref(generateRandomNumber());
 const userInput = ref("");
-const feedback = ref("");
-const feedbackTitle = ref("");
-const feedbackMessage = ref("");
+const correctAnswer = ref("");
+const { addToast } = useToast();
+const { t } = useI18n();
 
 const buildNumber = buildInfo.buildNumber;
 const buildTimestamp = new Date(buildInfo.timestamp).toLocaleString();
+
+const localeNames = {
+  en: "English",
+  es: "Español",
+  de: "Deutsch",
+};
 
 const numberSettings = [
   {
@@ -52,7 +59,7 @@ const numberSettings = [
 ];
 
 function getQuestionPlaceholder() {
-  return isReverseMode.value ? "p. ej. 34" : "p. ej. treinta y cuatro";
+  return isReverseMode.value ? t("placeholderDigits") : t("placeholderWords");
 }
 
 function generateNumberList() {
@@ -73,27 +80,18 @@ function onChangeNumberSetting() {
 }
 
 function checkAnswer() {
-  var correct = false;
   if (isReverseMode.value) {
     // isReverseMode = true means user sees the Spanish word and has to type the numeral
-    correct = currentNumber.value.toString();
+    correctAnswer.value = currentNumber.value.toString();
   } else {
     // isReverseMode = false (default) means user sees the  numeral and has to type the Spanish word
-    correct = numberToSpanish(currentNumber.value).toLowerCase().trim();
+    correctAnswer.value = numberToSpanish(currentNumber.value)
+      .toLowerCase()
+      .trim();
   }
   const input = userInput.value.toLowerCase().trim();
 
-  const isCorrect = input === correct;
-
-  if (isCorrect) {
-    feedback.value = true;
-    feedbackTitle.value = "¡Correcto!";
-    feedbackMessage.value = "¡Buen trabajo! 👏";
-  } else {
-    feedback.value = false;
-    feedbackTitle.value = "¡Incorrecto!";
-    feedbackMessage.value = `Correcto es: ${correct}`;
-  }
+  const isCorrect = input === correctAnswer.value;
 
   // Save the result to localStorage
   saveResult(currentNumber.value, isCorrect);
@@ -101,10 +99,15 @@ function checkAnswer() {
   // Update the streak
   const currentStreak = updateStreak(isCorrect);
 
-  // Reset feedback after 5 seconds
-  setTimeout(() => {
-    feedback.value = null;
-  }, 5000);
+  if (isCorrect) {
+    addToast("success", t("feedbackTitleSuccess"), t("feedbackMessageSuccess"));
+  } else {
+    addToast(
+      "error",
+      t("feedbackTitleError"),
+      t("feedbackMessageError", { correctAnswer: correctAnswer.value })
+    );
+  }
 
   // Generate a new number and reset input
   generateAndSetNewNumber();
@@ -146,13 +149,43 @@ function updateStreak(isCorrect) {
 <template>
   <div class="w-full flex flex-col gap-y-10 items-center justify-center p-4">
     <h1 class="text-2xl md:text-4xl font-bold text-black dark:text-white">
-      Practicar los números en español
+      {{ $t("heading") }}
     </h1>
+
+    <!-- Locale switcher -->
+    <div class="grid max-w-sm mx-auto">
+      <svg
+        class="pointer-events-none relative right-1 z-10 col-start-1 row-start-1 h-4 w-4 self-center justify-self-end forced-colors:hidden dark:text-white"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      <select
+        v-model="$i18n.locale"
+        class="col-start-1 row-start-1 appearance-none forced-colors:appearance-auto text-sm rounded-lg p-2.5 pr-10 bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      >
+        <option
+          v-for="locale in $i18n.availableLocales"
+          :key="`locale-${locale}`"
+          :value="locale"
+        >
+          {{ localeNames[locale] }}
+        </option>
+      </select>
+    </div>
 
     <div
       class="w-full flex flex-col gap-y-4 items-center justify-center p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
-      <p class="font-normal text-gray-700 dark:text-gray-400">Modo:</p>
+      <p class="font-normal text-gray-700 dark:text-gray-400">
+        {{ $t("mode") }}:
+      </p>
       <!-- Toggle for Numbers -->
       <ul class="flex flex-wrap items-center justify-center gap-4">
         <template v-for="(numSet, i) in numberSettings">
@@ -188,7 +221,9 @@ function updateStreak(isCorrect) {
           <div
             class="relative w-11 h-6 bg-gray-200 dark:bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600 dark:peer-checked:bg-indigo-600"
           ></div>
-          <span class="ms-3 text-gray-900 dark:text-white">inverso</span>
+          <span class="ms-3 text-gray-900 dark:text-white">{{
+            $t("inverse")
+          }}</span>
         </label>
       </div>
     </div>
@@ -198,11 +233,7 @@ function updateStreak(isCorrect) {
       class="w-full p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
       <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">
-        {{
-          isReverseMode
-            ? "¿Qué número es este en cifras?"
-            : "¿Qué número es este?"
-        }}
+        {{ isReverseMode ? $t("questionReverse") : $t("question") }}
       </p>
       <h2
         class="mb-2 text-xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white"
@@ -216,11 +247,7 @@ function updateStreak(isCorrect) {
       class="w-full p-6 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700"
     >
       <p class="font-normal text-gray-700 dark:text-gray-400 mb-4">
-        {{
-          isReverseMode
-            ? "Escribe el número en cifras:"
-            : "Escribe el número con letras:"
-        }}
+        {{ isReverseMode ? $t("answerPromptReverse") : $t("answerPrompt") }}
       </p>
 
       <div class="flex flex-row w-full">
@@ -236,7 +263,7 @@ function updateStreak(isCorrect) {
           @click="checkAnswer"
           class="text-sm md:text-xl w-2/5 p-2 border border-indigo-600 rounded-r-lg bg-indigo-800 text-white hover:bg-indigo-600"
         >
-          <span class="font-bold">Verificar</span>
+          <span class="font-bold">{{ $t("verify") }}</span>
           <span class="align-basline opacity-40 text-sm invisible md:visible"
             >(&#x23CE;)</span
           >
@@ -250,7 +277,7 @@ function updateStreak(isCorrect) {
         @click="toggleHint"
         class="p-2 border border-indigo-600 rounded-lg bg-indigo-800 text-white hover:bg-indigo-600"
       >
-        {{ showHint ? "Ocultar pista" : "Mostrar pista" }}
+        {{ showHint ? $t("hintHide") : $t("hintShow") }}
       </button>
 
       <!-- Button to Open Modal -->
@@ -258,13 +285,13 @@ function updateStreak(isCorrect) {
         @click="showModal = true"
         class="p-2 border border-indigo-600 rounded-lg bg-indigo-800 text-white hover:bg-indigo-600"
       >
-        Ver lista de números
+        {{ $t("showNumberList") }}
       </button>
     </div>
 
     <!-- Streak Display -->
     <div class="text-center text-gray-700 dark:text-gray-300">
-      <p class="text-lg font-bold">Racha actual: {{ streak }}</p>
+      <p class="text-lg font-bold">{{ $t("currentStreak") }}: {{ streak }}</p>
       <div class="flex items-center justify-center gap-1">
         <template
           v-for="n in Math.min(streak, 10)"
@@ -294,7 +321,7 @@ function updateStreak(isCorrect) {
     <!-- Modal -->
     <Modal
       :show="showModal"
-      title="Lista de números"
+      :title="$t('numberListTitle')"
       @close="showModal = false"
     >
       <table class="w-full text-left text-gray-700 dark:text-gray-400">
@@ -309,24 +336,14 @@ function updateStreak(isCorrect) {
       </table>
     </Modal>
 
-    <AlertSuccess
-      v-if="feedback === true"
-      :title="feedbackTitle"
-      :message="feedbackMessage"
-    />
-
-    <AlertError
-      v-if="feedback === false"
-      :title="feedbackTitle"
-      :message="feedbackMessage"
-    />
-
     <!-- Footer -->
     <div class="w-full p-4 text-center text-gray-500 dark:text-gray-400">
       <p class="text-xs">
-        Versión: {{ buildNumber }} - Construido el: {{ buildTimestamp }}
+        {{ $t("version") }}: {{ buildNumber }} - {{ $t("builtOn") }}:
+        {{ buildTimestamp }}
       </p>
     </div>
+    <Toast />
   </div>
 </template>
 
