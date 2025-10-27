@@ -5,6 +5,7 @@ import { generateRandomNumber } from "./generateRandomNumber.js";
 import AlertError from "./components/AlertError.vue";
 import AlertSuccess from "./components/AlertSuccess.vue";
 import Modal from "./components/Modal.vue";
+import buildInfo from "../build-info.json";
 
 var numberSetting = ref("upToThousand");
 const isReverseMode = ref(false);
@@ -17,6 +18,9 @@ const userInput = ref("");
 const feedback = ref("");
 const feedbackTitle = ref("");
 const feedbackMessage = ref("");
+
+const buildNumber = buildInfo.buildNumber;
+const buildTimestamp = new Date(buildInfo.timestamp).toLocaleString();
 
 const numberSettings = [
   {
@@ -258,6 +262,13 @@ function toggleHint() {
       :title="feedbackTitle"
       :message="feedbackMessage"
     />
+
+    <!-- Footer -->
+    <div class="w-full p-4 text-center text-gray-500 dark:text-gray-400">
+      <p class="text-xs">
+        Versión: {{ buildNumber }} - Construido el: {{ buildTimestamp }}
+      </p>
+    </div>
   </div>
 </template>
 
