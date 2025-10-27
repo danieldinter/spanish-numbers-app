@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { numberToSpanish } from "./numberToSpanish.js";
+import { generateRandomNumber } from "./generateRandomNumber.js";
 import AlertError from "./components/AlertError.vue";
 import AlertSuccess from "./components/AlertSuccess.vue";
 
@@ -17,49 +18,32 @@ const numberSettings = [
   {
     id: 1,
     name: "units",
-    label: "0-10",
+    label: "0-9",
   },
   {
     id: 2,
     name: "teens",
-    label: "11-20",
+    label: "10-19",
   },
   {
     id: 3,
     name: "twenties",
-    label: "20-30",
+    label: "20-29",
   },
   {
     id: 4,
-    name: "upToHundred",
-    label: "0-100",
+    name: "tens",
+    label: "0-99",
   },
   {
     id: 5,
-    name: "upToThousand",
-    label: "0-1000",
+    name: "hundreds",
+    label: "0-999",
   },
 ];
 
 function getQuestionPlaceholder() {
   return isReverseMode.value ? "p. ej. 34" : "p. ej. treinta y cuatro";
-}
-
-function generateRandomNumber(numberSetting = "upToThousand") {
-  switch (numberSetting) {
-    case "units":
-      return Math.floor(Math.random() * 11);
-    case "teens":
-      return Math.floor(Math.random() * 10) + 11;
-    case "twenties":
-      return Math.floor(Math.random() * 11) + 20;
-    case "upToHundred":
-      return Math.floor(Math.random() * 101);
-    case "upToThousand":
-    default:
-      break;
-  }
-  return Math.floor(Math.random() * 1001);
 }
 
 function generateAndSetNewNumber() {
