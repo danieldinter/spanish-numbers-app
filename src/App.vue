@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { numberToSpanish } from "./numberToSpanish.js";
 import { generateRandomNumber } from "./generateRandomNumber.js";
 import AlertError from "./components/AlertError.vue";
@@ -9,6 +9,7 @@ import Modal from "./components/Modal.vue";
 var numberSetting = ref("upToThousand");
 const isReverseMode = ref(false);
 const showModal = ref(false);
+const showHint = ref(false);
 
 const numberList = ref(generateNumberList());
 const currentNumber = ref(generateRandomNumber());
@@ -96,6 +97,17 @@ function checkAnswer() {
   generateAndSetNewNumber();
   userInput.value = "";
 }
+
+const hint = computed(() => {
+  if (isReverseMode.value) return ""; // No hint in reverse mode
+
+  const words = numberToSpanish(currentNumber.value).split(" ");
+  return words.map((word) => word[0] + "_".repeat(word.length - 1)).join(" ");
+});
+
+function toggleHint() {
+  showHint.value = !showHint.value;
+}
 </script>
 
 <template>
@@ -182,7 +194,7 @@ function checkAnswer() {
         <input
           v-model="userInput"
           type="text"
-          :placeholder="getQuestionPlaceholder()"
+          :placeholder="showHint ? hint : getQuestionPlaceholder()"
           class="text-sm md:text-2xl w-3/5 p-2 border border-r-0 border-indigo-600 rounded-l-lg bg-none text-gray-900 dark:text-white tracking-tight focus:outline-none"
           @keyup.enter="checkAnswer"
           autofocus
@@ -199,13 +211,23 @@ function checkAnswer() {
       </div>
     </div>
 
-    <!-- Button to Open Modal -->
-    <button
-      @click="showModal = true"
-      class="p-2 border border-indigo-600 rounded-lg bg-indigo-800 text-white hover:bg-indigo-600"
-    >
-      Ver lista de números
-    </button>
+    <div class="flex flex-row gap-x-4">
+      <!-- Toggle Hint Button -->
+      <button
+        @click="toggleHint"
+        class="p-2 border border-indigo-600 rounded-lg bg-indigo-800 text-white hover:bg-indigo-600"
+      >
+        {{ showHint ? "Ocultar pista" : "Mostrar pista" }}
+      </button>
+
+      <!-- Button to Open Modal -->
+      <button
+        @click="showModal = true"
+        class="p-2 border border-indigo-600 rounded-lg bg-indigo-800 text-white hover:bg-indigo-600"
+      >
+        Ver lista de números
+      </button>
+    </div>
 
     <!-- Modal -->
     <Modal
