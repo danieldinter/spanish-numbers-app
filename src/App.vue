@@ -5,6 +5,7 @@ import { generateRandomNumber } from "./generateRandomNumber.js";
 import AlertError from "./components/AlertError.vue";
 import AlertSuccess from "./components/AlertSuccess.vue";
 import Modal from "./components/Modal.vue";
+import FireIcon from "./components/FireIcon.vue";
 import buildInfo from "../build-info.json";
 
 var numberSetting = ref("upToThousand");
@@ -82,7 +83,9 @@ function checkAnswer() {
   }
   const input = userInput.value.toLowerCase().trim();
 
-  if (input === correct) {
+  const isCorrect = input === correct;
+
+  if (isCorrect) {
     feedback.value = true;
     feedbackTitle.value = "¡Correcto!";
     feedbackMessage.value = "¡Buen trabajo! 👏";
@@ -91,6 +94,12 @@ function checkAnswer() {
     feedbackTitle.value = "¡Incorrecto!";
     feedbackMessage.value = `Correcto es: ${correct}`;
   }
+
+  // Save the result to localStorage
+  saveResult(currentNumber.value, isCorrect);
+
+  // Update the streak
+  const currentStreak = updateStreak(isCorrect);
 
   // Reset feedback after 5 seconds
   setTimeout(() => {
@@ -111,6 +120,26 @@ const hint = computed(() => {
 
 function toggleHint() {
   showHint.value = !showHint.value;
+}
+
+function saveResult(number, isCorrect) {
+  const results = JSON.parse(localStorage.getItem("results")) || [];
+  results.push({
+    number,
+    correct: isCorrect,
+    timestamp: new Date().toISOString(),
+  });
+  localStorage.setItem("results", JSON.stringify(results));
+}
+
+const streak = ref(JSON.parse(localStorage.getItem("streak")) || 0);
+
+function updateStreak(isCorrect) {
+  let currentStreak = JSON.parse(localStorage.getItem("streak")) || 0;
+  currentStreak = isCorrect ? currentStreak + 1 : 0;
+  localStorage.setItem("streak", JSON.stringify(currentStreak));
+  streak.value = currentStreak; // Update the reactive variable
+  return currentStreak;
 }
 </script>
 
@@ -231,6 +260,35 @@ function toggleHint() {
       >
         Ver lista de números
       </button>
+    </div>
+
+    <!-- Streak Display -->
+    <div class="text-center text-gray-700 dark:text-gray-300">
+      <p class="text-lg font-bold">Racha actual: {{ streak }}</p>
+      <div class="flex items-center justify-center gap-1">
+        <template
+          v-for="n in Math.min(streak, 10)"
+          :key="`red-${n}`"
+          v-if="streak < 10"
+        >
+          <FireIcon class="w-6 h-6 fill-rose-400" />
+        </template>
+        <template v-if="streak >= 10 && streak < 100">
+          <FireIcon class="w-10 h-10 fill-zinc-400" />
+        </template>
+        <template v-if="streak >= 100 && streak < 250">
+          <FireIcon class="w-14 h-14 fill-amber-400" />
+        </template>
+        <template v-if="streak >= 250 && streak < 500">
+          <FireIcon class="w-14 h-14 fill-emerald-400" />
+        </template>
+        <template v-if="streak >= 500 && streak < 1000">
+          <FireIcon class="w-18 h-18 fill-sky-400" />
+        </template>
+        <template v-if="streak >= 1000">
+          <FireIcon class="w-22 h-22 fill-fuchsia-400" />
+        </template>
+      </div>
     </div>
 
     <!-- Modal -->
